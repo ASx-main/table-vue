@@ -4,10 +4,10 @@
         <caption>Заработная плата сотрудников</caption>
         <tr>
           <th>Имя сотрудника<br>
-          <button @click="sortName">Sort Name</button>
+          <button @click="sort('name')">Sort Name</button>
           </th>
           <th>Сумма заработной платы в рублях<br>
-          <button @click="sortSum">Sort Sum</button>
+          <button @click="sort('sum')">Sort Sum</button>
           </th>
         </tr>
         <RowsTable
@@ -37,13 +37,13 @@ export default {
   },
 
   methods: {
-    sortNameAsc() {
+    sortAsc(key) {
       this.sortArray.sort((a, b) => {
-        if (a.name < b.name) {
+        if (a[key] < b[key]) {
           return -1;
         }
 
-        if (a.name > b.name) {
+        if (a[key] > b[key]) {
           return 1;
         }
 
@@ -52,13 +52,13 @@ export default {
 
       this.directionName = 'desc';
     },
-    sortNameDesc() {
+    sortDesc(key) {
       this.sortArray.sort((a, b) => {
-        if (a.name > b.name) {
+        if (a[key] > b[key]) {
           return -1;
         }
 
-        if (a.name < b.name) {
+        if (a[key] < b[key]) {
           return 1;
         }
 
@@ -72,34 +72,15 @@ export default {
 
       this.directionName = 'asc';
     },
-    sortName() {
+    sort(key) {
       if (this.directionName === 'asc') {
-        this.sortNameAsc();
+        this.sortAsc(key);
       } else if (this.directionName === 'desc') {
-        this.sortNameDesc();
+        this.sortDesc(key);
       } else if (this.directionName === 'origin') {
         this.origin();
       }
     },
-    sortSumAcs() {
-      this.sortArray.sort((a, b) => a.sum - b.sum);
-      this.directionName = 'desc';
-    },
-    sortSumDesc() {
-      this.sortArray.sort((a, b) => b.sum - a.sum);
-      this.directionName = 'origin';
-    },
-
-    sortSum() {
-      if (this.directionName === 'asc') {
-        this.sortSumAcs();
-      } else if (this.directionName === 'desc') {
-        this.sortSumDesc();
-      } else if (this.directionName === 'origin') {
-        this.origin();
-      }
-    },
-
   },
   components: {
     RowsTable,
