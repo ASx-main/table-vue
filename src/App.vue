@@ -1,34 +1,49 @@
 <template>
   <div id="app">
     <Table
-    :rows="rows"/>
+      :users="users"
+      @sort="sort($event)"
+      @search='searching($event)'
+    />
   </div>
 </template>
 
 <script>
+import users from '@/user.json';
 import Table from './components/Table.vue';
 
 export default {
   data() {
     return {
-      rows: [
-        { id: 1, name: 'Иванова Вера', sum: 22500 },
-        { id: 3, name: 'Петрова Лидия', sum: 18900 },
-        { id: 5, name: 'Петров Иван', sum: 24600 },
-        { id: 7, name: 'Молчанов Дмитрий', sum: 31750 },
-        { id: 9, name: 'Сергеева Мария', sum: 27600 },
-        { id: 11, name: 'Полстянова Евгения', sum: 29750 },
-        { id: 13, name: 'Горький Павел', sum: 14800 },
-        { id: 15, name: 'Лоскутова Оксана', sum: 19400 },
-        { id: 17, name: 'Переверзев Максим', sum: 32690 },
-        { id: 19, name: 'Акиньшин Вадим', sum: 38700 },
-      ],
+      search: '',
+      key: 'username',
+      usersData: users,
     };
+  },
+  methods: {
+    searching(val) {
+      this.search = val;
+    },
+    sort(key) {
+      this.key = key;
+    },
+  },
+  computed: {
+    users() {
+      let users = JSON.parse(JSON.stringify(this.usersData));
+
+      if (this.search) {
+        users = users.filter((item) => item.username.includes(this.search));
+      }
+
+      return users;
+    },
   },
   components: {
     Table,
   },
 };
+
 </script>
 
 <style lang="scss">

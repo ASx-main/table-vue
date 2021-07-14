@@ -1,102 +1,76 @@
 /* eslint-disable global-require */
 <template>
   <div>
+    <input type="text" @input="search">
      <table border="1">
-        <caption>Заработная плата сотрудников</caption>
-        <tr>
-          <th>Имя сотрудника<br>
-          <button @click="sort('name')">Sort Name
-            <img :src="require(`@/img/${img.name}`)" :alt="altText">
-          </button>
-          </th>
-          <th>Сумма заработной платы в рублях<br>
-          <button @click="sort('sum')">Sort Sum
-             <img :src="require(`@/img/${img.sum}`)" :alt="altText">
-          </button>
-          </th>
-        </tr>
-        <RowsTable
-          :row="row"
-          v-for="row of sortArray"
-          :key="row.id"
-        />
+       <thead>
+         <tr>
+            <th
+              v-for="title of tableTitles"
+              :key="title"
+              @click="sort(title)"
+            >
+              {{ title }}
+            </th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr
+          v-for="(user, index) of users"
+          :key="index">
+           <td>
+              {{user.username}}
+           </td>
+           <td>
+              {{user.phone}}
+           </td>
+          <td>
+              {{user.email}}
+          </td>
+          <td >
+            <tr>
+              {{ user.person.name }}
+            </tr>
+            <tr>
+              {{ user.person.surname }}
+            </tr>
+            <tr>
+              {{ user.person.birthday }}
+            </tr>
+          </td>
+         </tr>
+       </tbody>
       </table>
     </div>
 </template>
 
 <script>
-import RowsTable from '@/components/RowsTable.vue';
-
 export default {
   props: {
-    rows: {
+    users: {
       type: Array,
       required: true,
     },
   },
   data() {
     return {
-      sortArray: JSON.parse(JSON.stringify(this.rows)),
-      directionName: 'asc',
-      img: {
-        name: 'up-down.png',
-        sum: 'up-down.png',
-      },
-      altText: 'arrow',
+
     };
   },
-
   methods: {
-    sortAsc(key) {
-      this.sortArray.sort((a, b) => {
-        if (a[key] < b[key]) {
-          return -1;
-        }
-
-        if (a[key] > b[key]) {
-          return 1;
-        }
-
-        return 0;
-      });
-
-      this.directionName = 'desc';
-      this.img[key] = 'down.png';
-    },
-    sortDesc(key) {
-      this.sortArray.sort((a, b) => {
-        if (a[key] > b[key]) {
-          return -1;
-        }
-
-        if (a[key] < b[key]) {
-          return 1;
-        }
-
-        return 0;
-      });
-
-      this.directionName = 'origin';
-      this.img[key] = 'up.png';
-    },
-    origin(key) {
-      this.sortArray = JSON.parse(JSON.stringify(this.rows));
-
-      this.directionName = 'asc';
-      this.img[key] = 'up-down.png';
-    },
     sort(key) {
-      if (this.directionName === 'asc') {
-        this.sortAsc(key);
-      } else if (this.directionName === 'desc') {
-        this.sortDesc(key);
-      } else if (this.directionName === 'origin') {
-        this.origin(key);
-      }
+      this.$emit('sort', key);
+    },
+    search(e) {
+      this.$emit('search', e.target.value);
     },
   },
-  components: {
-    RowsTable,
+  computed: {
+    tableTitles() {
+      const titleArray = Object.keys(this.users[0]);
+
+      return titleArray.filter((el) => el !== 'do_not_show_it_in_UI');
+    },
   },
 };
 
