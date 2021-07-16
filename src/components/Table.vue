@@ -1,47 +1,37 @@
 /* eslint-disable global-require */
 <template>
   <div>
-    <input type="text" @input="search">
-     <table border="1">
-       <thead>
-         <tr>
-            <th
-              v-for="title of tableTitles"
-              :key="title"
-              @click="sort(title)"
-            >
-              {{ title }}
-            </th>
-         </tr>
-       </thead>
-       <tbody>
-         <tr
-          v-for="(user, index) of users"
-          :key="index">
-           <td>
-              {{user.username}}
-           </td>
-           <td>
-              {{user.phone}}
-           </td>
-          <td>
-              {{user.email}}
+    <table border="1">
+      <thead>
+      <tr>
+        <th class="headers" v-for="header of headers" :key="header">
+          {{ header }}
+          <template v-if="header !== 'person'">
+            <input type="text" @input="searching($event, header)">
+            <button @click="sorting(header)">Sort</button>
+          </template>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <template v-if="users.length">
+        <tr v-for="(user, index) of users" :key="index">
+          <td v-for="(item, key) of user" :key="key">
+            <template v-if="key === 'person'">
+            <span style="margin-right: 5px;"
+                  v-for="person in item"
+                  :key="person"
+            >{{ person }}</span>
+            </template>
+            <template v-else>
+              {{ item }}
+            </template>
           </td>
-          <td >
-            <tr>
-              {{ user.person.name }}
-            </tr>
-            <tr>
-              {{ user.person.surname }}
-            </tr>
-            <tr>
-              {{ user.person.birthday }}
-            </tr>
-          </td>
-         </tr>
-       </tbody>
-      </table>
-    </div>
+        </tr>
+      </template>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -53,25 +43,27 @@ export default {
     },
   },
   data() {
-    return {
-
-    };
+    return {};
   },
   methods: {
-    sort(key) {
-      this.$emit('sort', key);
+    searching(e, key) {
+      this.$emit('searching', e.target.value, key);
     },
-    search(e) {
-      this.$emit('search', e.target.value);
+    sorting(key) {
+      this.$emit('sorting', key);
     },
   },
   computed: {
-    tableTitles() {
-      const titleArray = Object.keys(this.users[0]);
-
-      return titleArray.filter((el) => el !== 'do_not_show_it_in_UI');
+    headers() {
+      return Object.keys(this.users[0]);
     },
   },
 };
 
 </script>
+
+<style>
+.headers {
+  cursor: pointer;
+}
+</style>

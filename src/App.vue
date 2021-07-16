@@ -1,42 +1,72 @@
 <template>
   <div id="app">
     <Table
-      :users="users"
-      @sort="sort($event)"
-      @search='searching($event)'
+      :users="getUsers"
+      @searching="searching"
+      @sorting="sorting"
     />
   </div>
 </template>
 
 <script>
-import users from '@/user.json';
+import users from './services/users';
 import Table from './components/Table.vue';
 
 export default {
   data() {
     return {
-      search: '',
-      key: 'username',
       usersData: users,
+      search: '',
+      direction: '',
+      key: '',
     };
   },
   methods: {
-    searching(val) {
+    searching(val, key) {
       this.search = val;
-    },
-    sort(key) {
       this.key = key;
+    },
+    sorting(key) {
+      this.key = key;
+      if (this.direction === '') {
+        this.direction = 'asc';
+      } else if (this.direction === 'asc') {
+        this.direction = 'desc';
+      } else {
+        this.direction = '';
+      }
     },
   },
   computed: {
-    users() {
-      let users = JSON.parse(JSON.stringify(this.usersData));
+    getUsers() {
+      let newUsers = JSON.parse(JSON.stringify(this.usersData));
 
-      if (this.search) {
-        users = users.filter((item) => item.username.includes(this.search));
+      if (this.search !== '') {
+        newUsers = newUsers.filter((user) => user[this.key].includes(this.search));
       }
+      // Фильтр и сортировка не работает с объектом Person, так как он вложенный
+      newUsers.sort((a, b) => {
+        if (this.direction === 'asc') {
+          if (a[this.key] < b[this.key]) {
+            return -1;
+          }
 
-      return users;
+          if (a[this.key] > b[this.key]) {
+            return 1;
+          }
+        } else if (this.direction === 'desc') {
+          if (a[this.key] > b[this.key]) {
+            return -1;
+          }
+
+          if (a[this.key] < b[this.key]) {
+            return 1;
+          }
+        }
+        return 0;
+      });
+
+      return newUsers;
     },
   },
   components: {
