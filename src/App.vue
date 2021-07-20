@@ -42,9 +42,10 @@ export default {
       let newUsers = JSON.parse(JSON.stringify(this.usersData));
 
       if (this.search !== '') {
-        newUsers = newUsers.filter((user) => user[this.key].includes(this.search));
+        // eslint-disable-next-line max-len
+        newUsers = newUsers.filter((user) => user[this.key].toLowerCase().includes(this.search.toLowerCase()));
       }
-      // Фильтр и сортировка не работает с объектом Person, так как он вложенный
+
       newUsers.sort((a, b) => {
         if (this.direction === 'asc') {
           if (a[this.key] < b[this.key]) {

@@ -14,14 +14,14 @@
       </tr>
       </thead>
       <tbody>
-      <template v-if="users.length">
+      <template v-if="users.length > 0">
         <tr v-for="(user, index) of users" :key="index">
           <td v-for="(item, key) of user" :key="key">
             <template v-if="key === 'person'">
-            <span style="margin-right: 5px;"
-                  v-for="person in item"
-                  :key="person"
-            >{{ person }}</span>
+              <span style="margin-right: 5px;"
+                    v-for="person of item"
+                    :key="person"
+              >{{ person }}</span>
             </template>
             <template v-else>
               {{ item }}
@@ -43,7 +43,9 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      headers: Object.keys(this.users[0]),
+    };
   },
   methods: {
     searching(e, key) {
@@ -51,11 +53,6 @@ export default {
     },
     sorting(key) {
       this.$emit('sorting', key);
-    },
-  },
-  computed: {
-    headers() {
-      return Object.keys(this.users[0]);
     },
   },
 };

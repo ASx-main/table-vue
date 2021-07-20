@@ -18,12 +18,17 @@ const excludeKeys = ['do_not_show_it_in_UI'];
 function getAge(date) {
   const birthday = new Date(date);
   const currentDay = new Date();
-  return currentDay.getFullYear() - birthday.getFullYear();
-  // Возраст учитывается только по годам. (есть проблема, что в текущей дате путается месяц и день. надо фиксить, пока не разобралась почему)
+  let age = currentDay.getFullYear() - birthday.getFullYear();
+  const month = currentDay.getMonth() - birthday.getMonth();
+  if (month < 0 || (month === 0 && currentDay.getDate() < birthday.getDate() + 1)) {
+    age -= 1;
+  }
+  return age;
+  // Возраст учитывается только по годам
 }
 
 function prepareUser(userArg, userInterfaceArg, excludeKeysArg) {
-  const newUser = {};
+  let newUser = {};
 
   Object.keys(userInterfaceArg).forEach((key) => {
     if (userInterfaceArg[key] === 'string' && !excludeKeysArg.includes(key)) {
@@ -31,7 +36,7 @@ function prepareUser(userArg, userInterfaceArg, excludeKeysArg) {
     }
 
     if (typeof userInterfaceArg[key] === 'object' && !excludeKeysArg.includes(key)) {
-      newUser[key] = prepareUser(userArg[key], userInterfaceArg[key], excludeKeysArg);
+      newUser = {...newUser, ...prepareUser(userArg[key], userInterfaceArg[key], excludeKeysArg)} ;
       newUser.age = getAge(userArg.person.birthday).toString()
     }
   });
